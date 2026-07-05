@@ -1,7 +1,9 @@
 package com.currencyapp.servicelibrary.feign;
 
+import com.currencyapp.servicelibrary.dto.CryptoWalletDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -13,4 +15,17 @@ public interface CryptoWalletServiceClient {
 
     @DeleteMapping("/crypto-wallets/internal")
     void deleteWalletByEmail(@RequestParam("email") String email);
+
+    @GetMapping("/crypto-wallets/balance")
+    CryptoWalletDto getBalance(@RequestParam("email") String email, @RequestParam("currency") String currency);
+
+    @PostMapping("/crypto-wallets/deduct")
+    CryptoWalletDto deductAmount(@RequestParam("email") String email,
+                                  @RequestParam("currency") String currency,
+                                  @RequestParam("amount") Double amount);
+
+    @PostMapping("/crypto-wallets/add")
+    CryptoWalletDto addCryptoToWallet(@RequestParam("email") String email,
+                                       @RequestParam("currency") String currency,
+                                       @RequestParam("amount") Double amount);
 }
