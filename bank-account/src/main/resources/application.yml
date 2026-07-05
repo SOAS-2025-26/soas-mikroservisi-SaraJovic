@@ -5,17 +5,20 @@ spring:
   application:
     name: bank-account
   datasource:
-    url: jdbc:h2:mem:bankaccountdb
+    url: jdbc:h2:mem:bankdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
   h2:
     console:
       enabled: true
+  sql:
+    init:
+      mode: always
 
 eureka:
   client:
