@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { CryptoRatesComponent } from './pages/crypto-rates/crypto-rates.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { ExchangeRatesComponent } from './pages/exchange-rates/exchange-rates.component';
+import { ExchangeRatesComponent } from './components/exchange-rates/exchange-rates.component';
 import { LoginComponent } from './pages/login/login.component';
 
 export const routes: Routes = [
