@@ -4,6 +4,37 @@ server:
 spring:
   application:
     name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: currency-conversion
+          uri: lb://currency-conversion
+          predicates:
+            - Path=/currency-conversion**
+        - id: trade-service
+          uri: lb://trade-service
+          predicates:
+            - Path=/trade-service**
+        - id: users-service
+          uri: lb://users-service
+          predicates:
+            - Path=/users**
+        - id: bank-account
+          uri: lb://bank-account
+          predicates:
+            - Path=/bank-accounts**
+        - id: crypto-wallet
+          uri: lb://crypto-wallet
+          predicates:
+            - Path=/crypto-wallets**
+        - id: currency-exchange
+          uri: lb://currency-exchange
+          predicates:
+            - Path=/currency-exchange**
+        - id: crypto-exchange
+          uri: lb://crypto-exchange
+          predicates:
+            - Path=/crypto-exchange**
 
 eureka:
   client:

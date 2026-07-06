@@ -35,18 +35,6 @@
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
-
-    <dependency>
-      <groupId>com.currencyapp</groupId>
-      <artifactId>service-library</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.currencyapp</groupId>
-      <artifactId>util</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 
   <build>
