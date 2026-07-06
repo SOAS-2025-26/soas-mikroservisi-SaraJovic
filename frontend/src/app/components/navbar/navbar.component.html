@@ -1,0 +1,9 @@
+<nav>
+  <span class="title">Currency Exchange App</span>
+  <a routerLink="/exchange-rates" routerLinkActive="active">Exchange Rates</a>
+  <a routerLink="/crypto-rates" routerLinkActive="active">Crypto Rates</a>
+  @if (isLoggedIn) {
+    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    <button type="button" (click)="logout()">Logout</button>
+  }
+</nav>

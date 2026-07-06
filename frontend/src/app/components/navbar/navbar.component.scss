@@ -1,0 +1,11 @@
+nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+
+  .title {
+    font-weight: 600;
+    margin-right: 1rem;
+  }
+}
