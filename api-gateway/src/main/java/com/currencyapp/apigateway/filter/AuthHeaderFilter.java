@@ -12,16 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
-
 @Component
 public class AuthHeaderFilter implements GlobalFilter, Ordered {
-
-    private static final Map<String, String> USERNAME_TO_EMAIL = Map.of(
-            "owner", "owner@app.com",
-            "admin", "admin@app.com",
-            "user", "user@app.com"
-    );
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -42,7 +34,7 @@ public class AuthHeaderFilter implements GlobalFilter, Ordered {
                 .findFirst()
                 .map(authority -> authority.replace("ROLE_", ""))
                 .orElse("");
-        String email = USERNAME_TO_EMAIL.getOrDefault(username, "");
+        String email = username;
 
         ServerHttpRequest request = exchange.getRequest().mutate()
                 .header("X-User-Role", role)

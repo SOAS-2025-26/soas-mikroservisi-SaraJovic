@@ -23,18 +23,18 @@ public class SecurityConfig {
 
     @Bean
     public MapReactiveUserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails owner = User.withUsername("owner")
+        UserDetails owner = User.withUsername("owner@app.com")
                 .password(passwordEncoder.encode("owner123"))
                 .roles("OWNER")
                 .build();
 
-        UserDetails admin = User.withUsername("admin")
+        UserDetails admin = User.withUsername("admin@app.com")
                 .password(passwordEncoder.encode("admin123"))
                 .roles("ADMIN")
                 .build();
 
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder.encode("user123"))
+        UserDetails user = User.withUsername("testuser@app.com")
+                .password(passwordEncoder.encode("test123"))
                 .roles("USER")
                 .build();
 
