@@ -1,28 +1,28 @@
 <div class="page-wrapper">
   <div class="card">
     <div class="card-header">
-      <h2>💱 Fiat Currency Exchange Rates</h2>
-      <p>Check live exchange rates between major currencies</p>
+      <h2>🪙 Crypto Exchange Rates</h2>
+      <p>Check live crypto rates against major currencies</p>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label>From</label>
         <select [(ngModel)]="fromCurrency">
-          <option *ngFor="let c of currencies" [value]="c">{{c}}</option>
+          <option *ngFor="let c of cryptoCurrencies" [value]="c">{{c}}</option>
         </select>
       </div>
       <div class="arrow">→</div>
       <div class="form-group">
         <label>To</label>
         <select [(ngModel)]="toCurrency">
-          <option *ngFor="let c of currencies" [value]="c">{{c}}</option>
+          <option *ngFor="let c of fiatCurrencies" [value]="c">{{c}}</option>
         </select>
       </div>
     </div>
     <button class="btn-primary" (click)="getRate()" [disabled]="loading">
       {{ loading ? 'Loading...' : 'Get Rate' }}
     </button>
-    <div class="result" *ngIf="rate !== null && rate !== undefined">
+    <div class="result" *ngIf="rate">
       <span class="rate-text">1 {{fromCurrency}} = <strong>{{rate}}</strong> {{toCurrency}}</span>
     </div>
     <div class="error" *ngIf="error">{{ error }}</div>

@@ -35,6 +35,12 @@ public class UserService {
         return toDto(findUserOrThrow(id));
     }
 
+    public UserDto getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new BusinessException("User not found", HttpStatus.NOT_FOUND));
+        return new UserDto(null, user.getEmail(), user.getPassword(), user.getRole());
+    }
+
     public UserDto createUser(UserDto dto) {
         if (OWNER_ROLE.equalsIgnoreCase(dto.getRole()) && userRepository.findAll().stream()
                 .anyMatch(user -> OWNER_ROLE.equalsIgnoreCase(user.getRole()))) {

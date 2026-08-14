@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -6,7 +6,7 @@ import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-exchange-rates',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgFor, NgIf],
   templateUrl: './exchange-rates.component.html',
   styleUrl: './exchange-rates.component.scss',
 })
@@ -17,22 +17,26 @@ export class ExchangeRatesComponent {
 
   fromCurrency = 'EUR';
   toCurrency = 'USD';
-  rate: number | null = null;
+  rate: any = null;
   loading = false;
   error = '';
 
   getRate(): void {
+    console.log('getRate called');
+    console.log('from:', this.fromCurrency, 'to:', this.toCurrency);
     this.loading = true;
     this.error = '';
     this.rate = null;
 
     this.apiService.getExchangeRate(this.fromCurrency, this.toCurrency).subscribe({
       next: (result) => {
-        this.rate = result.rate;
+        console.log('result:', result);
+        this.rate = result['rate'];
         this.loading = false;
       },
       error: (err) => {
-        this.error = err?.error?.message ?? 'Failed to fetch exchange rate.';
+        console.log('error:', err);
+        this.error = 'Failed to fetch exchange rate.';
         this.loading = false;
       },
     });

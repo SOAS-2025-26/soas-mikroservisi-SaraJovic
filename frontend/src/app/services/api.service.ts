@@ -16,10 +16,11 @@ const BASE_URL = 'http://localhost:8765';
 export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly baseUrl = BASE_URL;
 
-  getExchangeRate(from: string, to: string): Observable<ExchangeRateDto> {
-    return this.http.get<ExchangeRateDto>(`${BASE_URL}/currency-exchange`, {
-      params: { from, to },
+  getExchangeRate(from: string, to: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/currency-exchange`, {
+      params: { from, to }
     });
   }
 
