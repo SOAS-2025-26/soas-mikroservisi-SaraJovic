@@ -65,6 +65,11 @@ public class TradeService {
     }
 
     public TradeResultDto tradeFallback(String from, String to, Double quantity, String email, Exception e) {
+        if (e instanceof BusinessException businessException) {
+            log.warn("Trade rejected for from={}, to={}, quantity={}, email={}: {}",
+                    from, to, quantity, email, businessException.getMessage());
+            throw businessException;
+        }
         log.error("Trade fallback triggered for from={}, to={}, quantity={}, email={}: {} - {}",
                 from, to, quantity, email, e.getClass().getName(), e.getMessage(), e);
         throw new BusinessException("Trade service is currently unavailable. Please try again later.", HttpStatus.SERVICE_UNAVAILABLE);

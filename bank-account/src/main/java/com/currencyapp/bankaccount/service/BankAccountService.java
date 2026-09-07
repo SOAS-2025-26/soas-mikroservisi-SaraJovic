@@ -7,6 +7,7 @@ import com.currencyapp.util.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -68,6 +69,7 @@ public class BankAccountService {
         return toDto(bankAccountRepository.save(account));
     }
 
+    @Transactional
     public void deleteAccountByEmail(String email) {
         bankAccountRepository.deleteByEmail(email);
     }
