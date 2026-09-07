@@ -10,13 +10,13 @@ spring:
         - id: currency-conversion
           uri: lb://currency-conversion
           predicates:
-            - Path=/currency-conversion**
+            - Path=/currency-conversion,/currency-conversion/**
           filters:
             - BasicAuth
         - id: trade-service
           uri: lb://trade-service
           predicates:
-            - Path=/trade-service**
+            - Path=/trade-service,/trade-service/**
           filters:
             - BasicAuth
         - id: users-service
@@ -40,11 +40,11 @@ spring:
         - id: currency-exchange
           uri: lb://currency-exchange
           predicates:
-            - Path=/currency-exchange**
+            - Path=/currency-exchange,/currency-exchange/**
         - id: crypto-exchange
           uri: lb://crypto-exchange
           predicates:
-            - Path=/crypto-exchange**
+            - Path=/crypto-exchange,/crypto-exchange/**
 
 eureka:
   client:

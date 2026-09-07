@@ -3,6 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
+gateway_log.txt
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
