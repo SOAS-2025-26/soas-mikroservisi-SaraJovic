@@ -11,22 +11,32 @@ spring:
           uri: lb://currency-conversion
           predicates:
             - Path=/currency-conversion**
+          filters:
+            - BasicAuth
         - id: trade-service
           uri: lb://trade-service
           predicates:
             - Path=/trade-service**
+          filters:
+            - BasicAuth
         - id: users-service
           uri: lb://users-service
           predicates:
-            - Path=/users**
+            - Path=/users/**
+          filters:
+            - BasicAuth
         - id: bank-account
           uri: lb://bank-account
           predicates:
-            - Path=/bank-accounts**
+            - Path=/bank-accounts/**
+          filters:
+            - BasicAuth
         - id: crypto-wallet
           uri: lb://crypto-wallet
           predicates:
-            - Path=/crypto-wallets**
+            - Path=/crypto-wallets/**
+          filters:
+            - BasicAuth
         - id: currency-exchange
           uri: lb://currency-exchange
           predicates:

@@ -31,6 +31,10 @@ public class CryptoWalletService {
     }
 
     public void createWallet(String email) {
+        if (cryptoWalletRepository.existsByEmailAndCurrencyCode(email, DEFAULT_CURRENCY)) {
+            return;
+        }
+
         CryptoWallet wallet = CryptoWallet.builder()
                 .email(email)
                 .currencyCode(DEFAULT_CURRENCY)

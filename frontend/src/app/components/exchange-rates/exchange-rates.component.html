@@ -1,30 +1,86 @@
-<div class="page-wrapper">
-  <div class="card">
-    <div class="card-header">
-      <h2>💱 Fiat Currency Exchange Rates</h2>
-      <p>Check live exchange rates between major currencies</p>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>From</label>
-        <select [(ngModel)]="fromCurrency">
-          <option *ngFor="let c of currencies" [value]="c">{{c}}</option>
-        </select>
+<div class="page">
+  <div class="page-header">
+    <h1>Exchange Rates</h1>
+    <p>Live rates powered by real-time data</p>
+  </div>
+
+  <div class="cards-row">
+    <div class="card">
+      <h2>💵 Fiat Currency Rates</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>From</label>
+          <select [(ngModel)]="fiatFrom">
+            <option *ngFor="let c of fiatCurrencies" [value]="c">{{c}}</option>
+          </select>
+        </div>
+        <div class="arrow">→</div>
+        <div class="form-group">
+          <label>To</label>
+          <select [(ngModel)]="fiatTo">
+            <option *ngFor="let c of fiatCurrencies" [value]="c">{{c}}</option>
+          </select>
+        </div>
       </div>
-      <div class="arrow">→</div>
-      <div class="form-group">
-        <label>To</label>
-        <select [(ngModel)]="toCurrency">
-          <option *ngFor="let c of currencies" [value]="c">{{c}}</option>
-        </select>
+      <button class="btn-primary" type="button" (click)="onGetFiatRate()" [disabled]="fiatLoading">
+        {{ fiatLoading ? 'Loading...' : 'Get Rate' }}
+      </button>
+      <div class="result" *ngIf="fiatRate !== null">
+        1 {{fiatFrom}} = <strong>{{fiatRate}}</strong> {{fiatTo}}
       </div>
+      <div class="error" *ngIf="fiatError">{{ fiatError }}</div>
     </div>
-    <button class="btn-primary" (click)="getRate()" [disabled]="loading">
-      {{ loading ? 'Loading...' : 'Get Rate' }}
-    </button>
-    <div class="result" *ngIf="rate !== null && rate !== undefined">
-      <span class="rate-text">1 {{fromCurrency}} = <strong>{{rate}}</strong> {{toCurrency}}</span>
+
+    <div class="card">
+      <h2>🪙 Crypto Rates</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>From</label>
+          <select [(ngModel)]="cryptoFrom">
+            <option *ngFor="let c of cryptoCurrencies" [value]="c">{{c}}</option>
+          </select>
+        </div>
+        <div class="arrow">→</div>
+        <div class="form-group">
+          <label>To</label>
+          <select [(ngModel)]="cryptoTo">
+            <option *ngFor="let c of cryptoTargets" [value]="c">{{c}}</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" type="button" (click)="onGetCryptoRate()" [disabled]="cryptoLoading">
+        {{ cryptoLoading ? 'Loading...' : 'Get Rate' }}
+      </button>
+      <div class="result" *ngIf="cryptoRate !== null">
+        1 {{cryptoFrom}} = <strong>{{cryptoRate}}</strong> {{cryptoTo}}
+      </div>
+      <div class="error" *ngIf="cryptoError">{{ cryptoError }}</div>
     </div>
-    <div class="error" *ngIf="error">{{ error }}</div>
+  </div>
+
+  <div class="card popular-card">
+    <h2>Popular Conversions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>PAIR</th>
+          <th>RATE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let conversion of popularConversions">
+          <td>{{ conversion.from }} → {{ conversion.to }}</td>
+          <td>
+            @if (conversion.loading) {
+              Loading...
+            } @else if (conversion.rate !== null) {
+              {{ conversion.rate }}
+            } @else {
+              N/A
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

@@ -13,4 +13,6 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Long> 
     void deleteByEmail(String email);
 
     Optional<BankAccount> findByEmailAndCurrencyCode(String email, String currencyCode);
+
+    boolean existsByEmailAndCurrencyCode(String email, String currencyCode);
 }

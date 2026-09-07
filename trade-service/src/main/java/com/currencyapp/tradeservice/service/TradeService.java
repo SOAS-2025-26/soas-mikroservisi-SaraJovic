@@ -13,11 +13,13 @@ import com.currencyapp.servicelibrary.feign.CurrencyExchangeServiceClient;
 import com.currencyapp.util.BusinessException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TradeService {
@@ -44,6 +46,9 @@ public class TradeService {
 
     @CircuitBreaker(name = "tradeService", fallbackMethod = "tradeFallback")
     public TradeResultDto trade(String from, String to, Double quantity, String email) {
+        from = from.toUpperCase();
+        to = to.toUpperCase();
+
         if (isCrypto(from) && isCrypto(to)) {
             return tradeCryptoToCrypto(from, to, quantity, email);
         }
@@ -60,6 +65,8 @@ public class TradeService {
     }
 
     public TradeResultDto tradeFallback(String from, String to, Double quantity, String email, Exception e) {
+        log.error("Trade fallback triggered for from={}, to={}, quantity={}, email={}: {} - {}",
+                from, to, quantity, email, e.getClass().getName(), e.getMessage(), e);
         throw new BusinessException("Trade service is currently unavailable. Please try again later.", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
@@ -74,7 +81,15 @@ public class TradeService {
         Double convertedAmount = quantity * rate.getRate();
 
         cryptoWalletServiceClient.deductAmount(email, from, quantity);
-        CryptoWalletDto updatedWallet = cryptoWalletServiceClient.addCryptoToWallet(email, to, convertedAmount);
+
+        CryptoWalletDto updatedWallet;
+        try {
+            updatedWallet = cryptoWalletServiceClient.addCryptoToWallet(email, to, convertedAmount);
+        } catch (Exception ex) {
+            log.warn("Failed to credit {} {} to {} after deduction; refunding {} {}", convertedAmount, to, email, quantity, from);
+            cryptoWalletServiceClient.addCryptoToWallet(email, from, quantity);
+            throw new BusinessException("Trade failed while crediting target wallet; deducted amount has been refunded.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return TradeResultDto.builder()
                 .bankAccount(null)
@@ -89,21 +104,29 @@ public class TradeService {
 
         if (!"USD".equalsIgnoreCase(from) && !"EUR".equalsIgnoreCase(from)) {
             ConversionResultDto conversionResult = currencyConversionServiceClient.convert(from, "USD", quantity, email);
-            effectiveQuantity = extractConvertedAmount(conversionResult.getTransactionMessage());
+            effectiveQuantity = conversionResult.getConvertedAmount();
             fiatCurrency = "USD";
         }
 
-        ExchangeRateDto rate = cryptoExchangeServiceClient.getExchangeRate(fiatCurrency, to);
+        ExchangeRateDto rate = cryptoExchangeServiceClient.getExchangeRate(to, fiatCurrency);
         BankAccountDto bankAccount = bankAccountServiceClient.getBalance(email, fiatCurrency);
 
         if (bankAccount.getAmount() < effectiveQuantity) {
             throw new BusinessException("Insufficient fiat funds", HttpStatus.BAD_REQUEST);
         }
 
-        Double convertedAmount = effectiveQuantity * rate.getRate();
+        Double convertedAmount = effectiveQuantity / rate.getRate();
 
         bankAccountServiceClient.deductAmount(email, fiatCurrency, effectiveQuantity);
-        CryptoWalletDto updatedWallet = cryptoWalletServiceClient.addCryptoToWallet(email, to, convertedAmount);
+
+        CryptoWalletDto updatedWallet;
+        try {
+            updatedWallet = cryptoWalletServiceClient.addCryptoToWallet(email, to, convertedAmount);
+        } catch (Exception ex) {
+            log.warn("Failed to credit {} {} to {} after deduction; refunding {} {}", convertedAmount, to, email, effectiveQuantity, fiatCurrency);
+            bankAccountServiceClient.addCurrencyToAccount(email, fiatCurrency, effectiveQuantity);
+            throw new BusinessException("Trade failed while crediting target wallet; deducted amount has been refunded.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return TradeResultDto.builder()
                 .bankAccount(null)
@@ -131,17 +154,20 @@ public class TradeService {
         }
 
         cryptoWalletServiceClient.deductAmount(email, from, quantity);
-        BankAccountDto updatedBankAccount = bankAccountServiceClient.addCurrencyToAccount(email, to, finalAmount);
+
+        BankAccountDto updatedBankAccount;
+        try {
+            updatedBankAccount = bankAccountServiceClient.addCurrencyToAccount(email, to, finalAmount);
+        } catch (Exception ex) {
+            log.warn("Failed to credit {} {} to {} after deduction; refunding {} {}", finalAmount, to, email, quantity, from);
+            cryptoWalletServiceClient.addCryptoToWallet(email, from, quantity);
+            throw new BusinessException("Trade failed while crediting target account; deducted amount has been refunded.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return TradeResultDto.builder()
                 .bankAccount(updatedBankAccount)
                 .cryptoWallet(null)
                 .transactionMessage("Successfully exchanged " + from + ": " + quantity + " for " + to + ": " + finalAmount)
                 .build();
-    }
-
-    private Double extractConvertedAmount(String transactionMessage) {
-        String[] parts = transactionMessage.split(": ");
-        return Double.parseDouble(parts[parts.length - 1]);
     }
 }

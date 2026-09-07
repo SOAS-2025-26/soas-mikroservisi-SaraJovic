@@ -17,6 +17,18 @@ export class NavbarComponent {
     return this.authService.isLoggedIn();
   }
 
+  get email(): string {
+    return this.authService.getEmail();
+  }
+
+  get role(): string {
+    return this.authService.getRole();
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "crypto-wallet")
+@FeignClient(name = "crypto-wallet", configuration = InternalAuthFeignConfig.class)
 public interface CryptoWalletServiceClient {
 
     @PostMapping("/crypto-wallets/internal")

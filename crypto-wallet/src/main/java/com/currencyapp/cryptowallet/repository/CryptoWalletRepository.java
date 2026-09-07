@@ -13,4 +13,6 @@ public interface CryptoWalletRepository extends JpaRepository<CryptoWallet, Long
     void deleteByEmail(String email);
 
     Optional<CryptoWallet> findByEmailAndCurrencyCode(String email, String currencyCode);
+
+    boolean existsByEmailAndCurrencyCode(String email, String currencyCode);
 }

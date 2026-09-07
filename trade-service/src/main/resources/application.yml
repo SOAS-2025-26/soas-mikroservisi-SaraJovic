@@ -29,3 +29,4 @@ resilience4j:
         slidingWindowSize: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
+        ignore-exceptions: com.currencyapp.util.BusinessException

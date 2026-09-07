@@ -13,4 +13,5 @@ public class ConversionResultDto {
 
     private BankAccountDto bankAccount;
     private String transactionMessage;
+    private Double convertedAmount;
 }

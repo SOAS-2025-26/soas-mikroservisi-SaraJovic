@@ -1,0 +1,117 @@
+services:
+  naming-server:
+    build:
+      context: .
+      dockerfile: naming-server/Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - "8765:8765"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+    networks:
+      - app-network
+
+  users-service:
+    build:
+      context: .
+      dockerfile: users-service/Dockerfile
+    ports:
+      - "8770:8770"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+    networks:
+      - app-network
+
+  bank-account:
+    build:
+      context: .
+      dockerfile: bank-account/Dockerfile
+    ports:
+      - "8200:8200"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+    networks:
+      - app-network
+
+  crypto-wallet:
+    build:
+      context: .
+      dockerfile: crypto-wallet/Dockerfile
+    ports:
+      - "8300:8300"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+    networks:
+      - app-network
+
+  currency-exchange:
+    build:
+      context: .
+      dockerfile: currency-exchange/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+    networks:
+      - app-network
+
+  crypto-exchange:
+    build:
+      context: .
+      dockerfile: crypto-exchange/Dockerfile
+    ports:
+      - "8400:8400"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+    networks:
+      - app-network
+
+  currency-conversion:
+    build:
+      context: .
+      dockerfile: currency-conversion/Dockerfile
+    ports:
+      - "8100:8100"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+    networks:
+      - app-network
+
+  trade-service:
+    build:
+      context: .
+      dockerfile: trade-service/Dockerfile
+    ports:
+      - "8600:8600"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/crypto-wallets/internal/**", "/crypto-wallets/balance",
-                                "/crypto-wallets/deduct", "/crypto-wallets/add").permitAll()
+                                "/crypto-wallets/deduct", "/crypto-wallets/add").hasRole("ADMIN")
                         .requestMatchers("/crypto-wallets/my").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/crypto-wallets").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/crypto-wallets/*").hasRole("ADMIN")

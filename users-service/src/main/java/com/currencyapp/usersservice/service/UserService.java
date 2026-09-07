@@ -7,18 +7,24 @@ import com.currencyapp.usersservice.entity.User;
 import com.currencyapp.usersservice.repository.UserRepository;
 import com.currencyapp.util.BusinessException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private static final String OWNER_ROLE = "OWNER";
+    private static final String ADMIN_ROLE = "ADMIN";
     private static final String USER_ROLE = "USER";
+
+    private static final int PROVISIONING_MAX_ATTEMPTS = 6;
+    private static final long PROVISIONING_RETRY_DELAY_MS = 1500;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -38,10 +44,28 @@ public class UserService {
     public UserDto getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new BusinessException("User not found", HttpStatus.NOT_FOUND));
-        return new UserDto(null, user.getEmail(), user.getPassword(), user.getRole());
+        return toDto(user);
     }
 
-    public UserDto createUser(UserDto dto) {
+    public UserDto validateUser(String email, String password) {
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            throw new BusinessException("Invalid email or password", HttpStatus.UNAUTHORIZED);
+        }
+
+        return UserDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
+    }
+
+    public UserDto createUser(UserDto dto, String actorRole) {
+        if (ADMIN_ROLE.equalsIgnoreCase(actorRole) && !USER_ROLE.equalsIgnoreCase(dto.getRole())) {
+            throw new BusinessException("ADMIN can only create users with role USER", HttpStatus.FORBIDDEN);
+        }
+
         if (OWNER_ROLE.equalsIgnoreCase(dto.getRole()) && userRepository.findAll().stream()
                 .anyMatch(user -> OWNER_ROLE.equalsIgnoreCase(user.getRole()))) {
             throw new BusinessException("An OWNER already exists", HttpStatus.CONFLICT);
@@ -60,15 +84,22 @@ public class UserService {
         User saved = userRepository.save(user);
 
         if (USER_ROLE.equalsIgnoreCase(saved.getRole())) {
-            bankAccountServiceClient.createAccount(saved.getEmail());
-            cryptoWalletServiceClient.createWallet(saved.getEmail());
+            retryProvisioningCall("create bank account for " + saved.getEmail(),
+                    () -> bankAccountServiceClient.createAccount(saved.getEmail()));
+            retryProvisioningCall("create crypto wallet for " + saved.getEmail(),
+                    () -> cryptoWalletServiceClient.createWallet(saved.getEmail()));
         }
 
         return toDto(saved);
     }
 
-    public UserDto updateUser(Long id, UserDto dto) {
+    public UserDto updateUser(Long id, UserDto dto, String actorRole) {
         User user = findUserOrThrow(id);
+
+        if (ADMIN_ROLE.equalsIgnoreCase(actorRole)
+                && (!USER_ROLE.equalsIgnoreCase(user.getRole()) || !USER_ROLE.equalsIgnoreCase(dto.getRole()))) {
+            throw new BusinessException("ADMIN can only update users with role USER", HttpStatus.FORBIDDEN);
+        }
 
         user.setEmail(dto.getEmail());
         user.setRole(dto.getRole());
@@ -84,8 +115,32 @@ public class UserService {
         userRepository.delete(user);
 
         if (USER_ROLE.equalsIgnoreCase(user.getRole())) {
-            bankAccountServiceClient.deleteAccountByEmail(user.getEmail());
-            cryptoWalletServiceClient.deleteWalletByEmail(user.getEmail());
+            retryProvisioningCall("delete bank account for " + user.getEmail(),
+                    () -> bankAccountServiceClient.deleteAccountByEmail(user.getEmail()));
+            retryProvisioningCall("delete crypto wallet for " + user.getEmail(),
+                    () -> cryptoWalletServiceClient.deleteWalletByEmail(user.getEmail()));
+        }
+    }
+
+    private void retryProvisioningCall(String description, Runnable call) {
+        for (int attempt = 1; attempt <= PROVISIONING_MAX_ATTEMPTS; attempt++) {
+            try {
+                call.run();
+                return;
+            } catch (Exception ex) {
+                if (attempt == PROVISIONING_MAX_ATTEMPTS) {
+                    log.warn("Failed to {} after {} attempts: {}", description, PROVISIONING_MAX_ATTEMPTS, ex.getMessage());
+                    return;
+                }
+
+                try {
+                    Thread.sleep(PROVISIONING_RETRY_DELAY_MS);
+                } catch (InterruptedException interruptedException) {
+                    Thread.currentThread().interrupt();
+                    log.warn("Interrupted while retrying {}", description);
+                    return;
+                }
+            }
         }
     }
 

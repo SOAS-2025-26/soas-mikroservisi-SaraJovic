@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/bank-accounts/internal/**", "/bank-accounts/balance",
-                                "/bank-accounts/deduct", "/bank-accounts/add").permitAll()
+                                "/bank-accounts/deduct", "/bank-accounts/add").hasRole("ADMIN")
                         .requestMatchers("/bank-accounts/my").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/bank-accounts").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/bank-accounts/*").hasRole("ADMIN")

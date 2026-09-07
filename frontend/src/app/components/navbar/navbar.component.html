@@ -1,9 +1,18 @@
 <nav>
-  <span class="title">Currency Exchange App</span>
-  <a routerLink="/exchange-rates" routerLinkActive="active">Exchange Rates</a>
-  <a routerLink="/crypto-rates" routerLinkActive="active">Crypto Rates</a>
-  @if (isLoggedIn) {
-    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-    <button type="button" (click)="logout()">Logout</button>
-  }
+  <div class="logo">Exchange</div>
+  <div class="nav-links">
+    <a routerLink="/exchange-rates" routerLinkActive="active">Exchange Rates</a>
+    @if (isLoggedIn) {
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    }
+  </div>
+  <div class="right-side">
+    @if (isLoggedIn) {
+      <span class="user-email">{{ email }}</span>
+      <span class="role-badge {{ role.toLowerCase() }}">{{ role }}</span>
+      <button class="logout-btn" type="button" (click)="logout()">Log out</button>
+    } @else {
+      <button class="login-btn" type="button" (click)="goToLogin()">Log in</button>
+    }
+  </div>
 </nav>

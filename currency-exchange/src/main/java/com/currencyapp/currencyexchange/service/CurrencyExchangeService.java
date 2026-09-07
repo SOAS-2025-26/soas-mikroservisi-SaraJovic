@@ -33,7 +33,7 @@ public class CurrencyExchangeService {
         }
 
         Map<String, Object> rates = (Map<String, Object>) response.get("rates");
-        Object rateValue = rates.get(to);
+        Object rateValue = rates.get(to.toUpperCase());
 
         if (rateValue == null) {
             throw new BusinessException("Currency " + to + " not found in exchange rate response", HttpStatus.BAD_REQUEST);

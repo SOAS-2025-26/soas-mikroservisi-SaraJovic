@@ -1,0 +1,241 @@
+<div class="page">
+  @if (isOwnerOrAdmin) {
+    <div class="page-header">
+      <h1>Dashboard</h1>
+      <p>{{ email }}</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header-row">
+        <h2>USERS</h2>
+        <button class="btn-add" type="button" (click)="toggleAddUserForm()">+ Add User</button>
+      </div>
+
+      <div class="inline-form" *ngIf="showAddUserForm">
+        <input type="email" [(ngModel)]="newUser.email" placeholder="Email" />
+        <input type="password" [(ngModel)]="newUser.password" placeholder="Password" />
+        <select [(ngModel)]="newUser.role">
+          <option *ngFor="let r of availableRoles" [value]="r">{{r}}</option>
+        </select>
+        <button class="btn-success" type="button" (click)="submitAddUser()">Save</button>
+        <button class="btn-cancel" type="button" (click)="cancelAddUser()">Cancel</button>
+      </div>
+
+      <div class="error" *ngIf="userFormError">{{ userFormError }}</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>EMAIL</th>
+            <th>PASSWORD</th>
+            <th>ROLE</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="usersLoading">
+            <td colspan="4">Loading...</td>
+          </tr>
+          <tr *ngFor="let user of visibleUsers">
+            @if (editingUserId === user.id) {
+              <td>{{ user.email }}</td>
+              <td>
+                <input type="password" [(ngModel)]="editUserForm.password" placeholder="New password (optional)" />
+              </td>
+              <td>
+                <select [(ngModel)]="editUserForm.role">
+                  <option *ngFor="let r of availableRoles" [value]="r">{{r}}</option>
+                </select>
+              </td>
+              <td>
+                <button class="btn-success" type="button" (click)="submitEditUser(user)">Save</button>
+                <button class="btn-cancel" type="button" (click)="cancelEditUser()">Cancel</button>
+              </td>
+            } @else {
+              <td>{{ user.email }}</td>
+              <td>******</td>
+              <td>{{ user.role }}</td>
+              <td>
+                <button *ngIf="canEditUser(user)" class="btn-edit" type="button" (click)="startEditUser(user)">Edit</button>
+                <button *ngIf="canDeleteUser(user)" class="btn-danger" type="button" (click)="removeUser(user)">Delete</button>
+              </td>
+            }
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    @if (isAdmin) {
+      <div class="card">
+        <h2>BANK ACCOUNTS</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>EMAIL</th>
+              <th>CURRENCY</th>
+              <th>BALANCE</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="bankAccountsLoading">
+              <td colspan="4">Loading...</td>
+            </tr>
+            <tr *ngFor="let account of bankAccounts">
+              @if (editingBankAccountId === account.id) {
+                <td>{{ account.email }}</td>
+                <td>{{ account.currencyCode }}</td>
+                <td><input type="number" [(ngModel)]="editBankAccountAmount" /></td>
+                <td>
+                  <button class="btn-success" type="button" (click)="submitEditBankAccount(account)">Save</button>
+                  <button class="btn-cancel" type="button" (click)="cancelEditBankAccount()">Cancel</button>
+                </td>
+              } @else {
+                <td>{{ account.email }}</td>
+                <td>{{ account.currencyCode }}</td>
+                <td>{{ account.amount }}</td>
+                <td>
+                  <button class="btn-edit" type="button" (click)="startEditBankAccount(account)">Edit</button>
+                </td>
+              }
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>CRYPTO WALLETS</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>EMAIL</th>
+              <th>CURRENCY</th>
+              <th>BALANCE</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="cryptoWalletsLoading">
+              <td colspan="4">Loading...</td>
+            </tr>
+            <tr *ngFor="let wallet of cryptoWallets">
+              @if (editingCryptoWalletId === wallet.id) {
+                <td>{{ wallet.email }}</td>
+                <td>{{ wallet.currencyCode }}</td>
+                <td><input type="number" [(ngModel)]="editCryptoWalletAmount" /></td>
+                <td>
+                  <button class="btn-success" type="button" (click)="submitEditCryptoWallet(wallet)">Save</button>
+                  <button class="btn-cancel" type="button" (click)="cancelEditCryptoWallet()">Cancel</button>
+                </td>
+              } @else {
+                <td>{{ wallet.email }}</td>
+                <td>{{ wallet.currencyCode }}</td>
+                <td>{{ wallet.amount }}</td>
+                <td>
+                  <button class="btn-edit" type="button" (click)="startEditCryptoWallet(wallet)">Edit</button>
+                </td>
+              }
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+  } @else {
+    <div class="page-header">
+      <h1>Welcome, {{ role }}</h1>
+      <p>{{ email }}</p>
+    </div>
+
+    <div class="cards-row">
+      <div class="card">
+        <h2>MY BANK ACCOUNT</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>CURRENCY</th>
+              <th>BALANCE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let account of myBankAccounts">
+              <td>{{ account.currencyCode }}</td>
+              <td>{{ account.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>MY CRYPTO WALLET</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>CURRENCY</th>
+              <th>BALANCE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let wallet of myCryptoWallets">
+              <td>{{ wallet.currencyCode }}</td>
+              <td>{{ wallet.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Currency Conversion</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>From</label>
+          <select [(ngModel)]="convFrom">
+            <option *ngFor="let c of fiatCurrencies" [value]="c">{{c}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>To</label>
+          <select [(ngModel)]="convTo">
+            <option *ngFor="let c of fiatCurrencies" [value]="c">{{c}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" [(ngModel)]="convQuantity" min="0" />
+        </div>
+      </div>
+      <button class="btn-primary" type="button" (click)="onConvert()" [disabled]="conversionLoading">
+        {{ conversionLoading ? 'Processing...' : 'Exchange' }}
+      </button>
+      <div class="result" *ngIf="conversionResult">{{ conversionResult }}</div>
+      <div class="error" *ngIf="conversionError">{{ conversionError }}</div>
+    </div>
+
+    <div class="card">
+      <h2>Crypto Trading</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>From</label>
+          <select [(ngModel)]="tradeFrom">
+            <option *ngFor="let c of allCurrencies" [value]="c">{{c}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>To</label>
+          <select [(ngModel)]="tradeTo">
+            <option *ngFor="let c of allCurrencies" [value]="c">{{c}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" [(ngModel)]="tradeQuantity" min="0" />
+        </div>
+      </div>
+      <button class="btn-primary" type="button" (click)="onTrade()" [disabled]="tradeLoading">
+        {{ tradeLoading ? 'Processing...' : 'Exchange' }}
+      </button>
+      <div class="result" *ngIf="tradeResult">{{ tradeResult }}</div>
+      <div class="error" *ngIf="tradeError">{{ tradeError }}</div>
+    </div>
+  }
+</div>

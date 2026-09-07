@@ -1,44 +1,103 @@
-import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { ApiService } from '../../services/api.service';
+import { ApiService, ExchangeRateDto } from '../../services/api.service';
+
+interface PopularConversion {
+  from: string;
+  to: string;
+  rate: number | null;
+  loading: boolean;
+}
 
 @Component({
   selector: 'app-exchange-rates',
-  imports: [CommonModule, FormsModule, NgFor, NgIf],
+  imports: [CommonModule, FormsModule],
   templateUrl: './exchange-rates.component.html',
   styleUrl: './exchange-rates.component.scss',
 })
-export class ExchangeRatesComponent {
+export class ExchangeRatesComponent implements OnInit {
   private readonly apiService = inject(ApiService);
 
-  readonly currencies = ['EUR', 'USD', 'GBP', 'CHF', 'RSD', 'JPY', 'CAD', 'AUD'];
+  readonly fiatCurrencies = ['EUR', 'USD', 'GBP', 'CHF', 'RSD', 'JPY', 'CAD', 'AUD'];
+  readonly cryptoCurrencies = ['BTC', 'ETH', 'BNB', 'SOL', 'ADA', 'DOGE', 'XRP', 'DOT', 'AVAX', 'MATIC'];
+  readonly cryptoTargets = ['USD', 'EUR', 'GBP', 'CHF'];
 
-  fromCurrency = 'EUR';
-  toCurrency = 'USD';
-  rate: any = null;
-  loading = false;
-  error = '';
+  fiatFrom = 'EUR';
+  fiatTo = 'USD';
+  fiatRate: number | null = null;
+  fiatLoading = false;
+  fiatError = '';
 
-  getRate(): void {
-    console.log('getRate called');
-    console.log('from:', this.fromCurrency, 'to:', this.toCurrency);
-    this.loading = true;
-    this.error = '';
-    this.rate = null;
+  cryptoFrom = 'BTC';
+  cryptoTo = 'USD';
+  cryptoRate: number | null = null;
+  cryptoLoading = false;
+  cryptoError = '';
 
-    this.apiService.getExchangeRate(this.fromCurrency, this.toCurrency).subscribe({
+  popularConversions: PopularConversion[] = [
+    { from: 'EUR', to: 'RSD', rate: null, loading: true },
+    { from: 'USD', to: 'RSD', rate: null, loading: true },
+    { from: 'BTC', to: 'USD', rate: null, loading: true },
+    { from: 'ETH', to: 'USD', rate: null, loading: true },
+    { from: 'USD', to: 'EUR', rate: null, loading: true },
+  ];
+
+  ngOnInit(): void {
+    this.loadPopularConversions();
+  }
+
+  onGetFiatRate(): void {
+    this.fiatLoading = true;
+    this.fiatError = '';
+    this.fiatRate = null;
+
+    this.apiService.getExchangeRate(this.fiatFrom, this.fiatTo).subscribe({
       next: (result) => {
-        console.log('result:', result);
-        this.rate = result['rate'];
-        this.loading = false;
+        this.fiatRate = result.rate;
+        this.fiatLoading = false;
       },
-      error: (err) => {
-        console.log('error:', err);
-        this.error = 'Failed to fetch exchange rate.';
-        this.loading = false;
+      error: () => {
+        this.fiatError = 'Failed to fetch exchange rate.';
+        this.fiatLoading = false;
       },
+    });
+  }
+
+  onGetCryptoRate(): void {
+    this.cryptoLoading = true;
+    this.cryptoError = '';
+    this.cryptoRate = null;
+
+    this.apiService.getCryptoRate(this.cryptoFrom, this.cryptoTo).subscribe({
+      next: (result) => {
+        this.cryptoRate = result.rate;
+        this.cryptoLoading = false;
+      },
+      error: () => {
+        this.cryptoError = 'Failed to fetch crypto rate.';
+        this.cryptoLoading = false;
+      },
+    });
+  }
+
+  private loadPopularConversions(): void {
+    this.popularConversions.forEach((conversion) => {
+      const isCrypto = this.cryptoCurrencies.includes(conversion.from);
+      const request = isCrypto
+        ? this.apiService.getCryptoRate(conversion.from, conversion.to)
+        : this.apiService.getExchangeRate(conversion.from, conversion.to);
+
+      request.subscribe({
+        next: (result: ExchangeRateDto) => {
+          conversion.rate = result.rate;
+          conversion.loading = false;
+        },
+        error: () => {
+          conversion.loading = false;
+        },
+      });
     });
   }
 }

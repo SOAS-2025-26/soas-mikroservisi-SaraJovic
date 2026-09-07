@@ -31,6 +31,10 @@ public class BankAccountService {
     }
 
     public void createAccount(String email) {
+        if (bankAccountRepository.existsByEmailAndCurrencyCode(email, DEFAULT_CURRENCY)) {
+            return;
+        }
+
         BankAccount account = BankAccount.builder()
                 .email(email)
                 .currencyCode(DEFAULT_CURRENCY)
