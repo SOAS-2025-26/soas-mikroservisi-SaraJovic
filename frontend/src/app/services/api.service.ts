@@ -93,6 +93,13 @@ export class ApiService {
     return this.http.put<BankAccountDto>(`${BASE_URL}/bank-accounts/${id}`, data, { headers: this.getAuthHeaders() });
   }
 
+  addBankAccount(email: string, currency: string, amount: number): Observable<BankAccountDto> {
+    return this.http.post<BankAccountDto>(`${BASE_URL}/bank-accounts/add`, null, {
+      params: { email, currency, amount },
+      headers: this.getAuthHeaders(),
+    });
+  }
+
   getAllCryptoWallets(): Observable<CryptoWalletDto[]> {
     return this.http.get<CryptoWalletDto[]>(`${BASE_URL}/crypto-wallets`, { headers: this.getAuthHeaders() });
   }
@@ -103,6 +110,13 @@ export class ApiService {
 
   updateCryptoWallet(id: number, data: Partial<CryptoWalletDto>): Observable<CryptoWalletDto> {
     return this.http.put<CryptoWalletDto>(`${BASE_URL}/crypto-wallets/${id}`, data, { headers: this.getAuthHeaders() });
+  }
+
+  addCryptoWallet(email: string, currency: string, amount: number): Observable<CryptoWalletDto> {
+    return this.http.post<CryptoWalletDto>(`${BASE_URL}/crypto-wallets/add`, null, {
+      params: { email, currency, amount },
+      headers: this.getAuthHeaders(),
+    });
   }
 
   convertCurrency(from: string, to: string, quantity: number): Observable<ConversionResultDto> {

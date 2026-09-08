@@ -3,7 +3,10 @@ package com.currencyapp.cryptowallet.service;
 import com.currencyapp.cryptowallet.entity.CryptoWallet;
 import com.currencyapp.cryptowallet.repository.CryptoWalletRepository;
 import com.currencyapp.servicelibrary.dto.CryptoWalletDto;
+import com.currencyapp.servicelibrary.dto.UserDto;
+import com.currencyapp.servicelibrary.feign.UsersServiceClient;
 import com.currencyapp.util.BusinessException;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,8 +19,10 @@ import java.util.List;
 public class CryptoWalletService {
 
     private static final String DEFAULT_CURRENCY = "ETH";
+    private static final String USER_ROLE = "USER";
 
     private final CryptoWalletRepository cryptoWalletRepository;
+    private final UsersServiceClient usersServiceClient;
 
     public List<CryptoWalletDto> getAllWallets() {
         return cryptoWalletRepository.findAll().stream()
@@ -47,15 +52,34 @@ public class CryptoWalletService {
 
     public CryptoWalletDto addCryptoToWallet(String email, String currencyCode, Double amount) {
         CryptoWallet wallet = cryptoWalletRepository.findByEmailAndCurrencyCode(email, currencyCode)
-                .orElseGet(() -> CryptoWallet.builder()
-                        .email(email)
-                        .currencyCode(currencyCode)
-                        .amount(0.0)
-                        .build());
+                .orElseGet(() -> {
+                    validateUserExists(email);
+                    return CryptoWallet.builder()
+                            .email(email)
+                            .currencyCode(currencyCode)
+                            .amount(0.0)
+                            .build();
+                });
 
         wallet.setAmount(wallet.getAmount() + amount);
 
         return toDto(cryptoWalletRepository.save(wallet));
+    }
+
+    private void validateUserExists(String email) {
+        UserDto user;
+
+        try {
+            user = usersServiceClient.getUserByEmail(email);
+        } catch (FeignException.NotFound ex) {
+            throw new BusinessException("Cannot create crypto wallet: no USER with email " + email + " exists", HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            throw new BusinessException("Unable to verify user, please try again later", HttpStatus.SERVICE_UNAVAILABLE);
+        }
+
+        if (!USER_ROLE.equalsIgnoreCase(user.getRole())) {
+            throw new BusinessException("Cannot create crypto wallet: no USER with email " + email + " exists", HttpStatus.NOT_FOUND);
+        }
     }
 
     public CryptoWalletDto updateWallet(Long id, CryptoWalletDto dto) {

@@ -76,7 +76,7 @@
             } @else if (conversion.rate !== null) {
               {{ conversion.rate }}
             } @else {
-              N/A
+              <span [title]="conversion.errorMessage ?? ''">N/A</span>
             }
           </td>
         </tr>

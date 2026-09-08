@@ -9,6 +9,7 @@ interface PopularConversion {
   to: string;
   rate: number | null;
   loading: boolean;
+  errorMessage: string | null;
 }
 
 @Component({
@@ -37,11 +38,11 @@ export class ExchangeRatesComponent implements OnInit {
   cryptoError = '';
 
   popularConversions: PopularConversion[] = [
-    { from: 'EUR', to: 'RSD', rate: null, loading: true },
-    { from: 'USD', to: 'RSD', rate: null, loading: true },
-    { from: 'BTC', to: 'USD', rate: null, loading: true },
-    { from: 'ETH', to: 'USD', rate: null, loading: true },
-    { from: 'USD', to: 'EUR', rate: null, loading: true },
+    { from: 'EUR', to: 'RSD', rate: null, loading: true, errorMessage: null },
+    { from: 'USD', to: 'RSD', rate: null, loading: true, errorMessage: null },
+    { from: 'BTC', to: 'USD', rate: null, loading: true, errorMessage: null },
+    { from: 'ETH', to: 'USD', rate: null, loading: true, errorMessage: null },
+    { from: 'USD', to: 'EUR', rate: null, loading: true, errorMessage: null },
   ];
 
   ngOnInit(): void {
@@ -94,7 +95,9 @@ export class ExchangeRatesComponent implements OnInit {
           conversion.rate = result.rate;
           conversion.loading = false;
         },
-        error: () => {
+        error: (err) => {
+          console.error('Failed to load rate for', conversion.from, '->', conversion.to, err);
+          conversion.errorMessage = err?.error?.message ?? err?.message ?? 'Failed to load';
           conversion.loading = false;
         },
       });

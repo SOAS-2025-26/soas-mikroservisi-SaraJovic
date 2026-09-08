@@ -3,7 +3,10 @@ package com.currencyapp.bankaccount.service;
 import com.currencyapp.bankaccount.entity.BankAccount;
 import com.currencyapp.bankaccount.repository.BankAccountRepository;
 import com.currencyapp.servicelibrary.dto.BankAccountDto;
+import com.currencyapp.servicelibrary.dto.UserDto;
+import com.currencyapp.servicelibrary.feign.UsersServiceClient;
 import com.currencyapp.util.BusinessException;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,8 +19,10 @@ import java.util.List;
 public class BankAccountService {
 
     private static final String DEFAULT_CURRENCY = "EUR";
+    private static final String USER_ROLE = "USER";
 
     private final BankAccountRepository bankAccountRepository;
+    private final UsersServiceClient usersServiceClient;
 
     public List<BankAccountDto> getAllAccounts() {
         return bankAccountRepository.findAll().stream()
@@ -47,15 +52,34 @@ public class BankAccountService {
 
     public BankAccountDto addCurrencyToAccount(String email, String currencyCode, Double amount) {
         BankAccount account = bankAccountRepository.findByEmailAndCurrencyCode(email, currencyCode)
-                .orElseGet(() -> BankAccount.builder()
-                        .email(email)
-                        .currencyCode(currencyCode)
-                        .amount(0.0)
-                        .build());
+                .orElseGet(() -> {
+                    validateUserExists(email);
+                    return BankAccount.builder()
+                            .email(email)
+                            .currencyCode(currencyCode)
+                            .amount(0.0)
+                            .build();
+                });
 
         account.setAmount(account.getAmount() + amount);
 
         return toDto(bankAccountRepository.save(account));
+    }
+
+    private void validateUserExists(String email) {
+        UserDto user;
+
+        try {
+            user = usersServiceClient.getUserByEmail(email);
+        } catch (FeignException.NotFound ex) {
+            throw new BusinessException("Cannot create bank account: no USER with email " + email + " exists", HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            throw new BusinessException("Unable to verify user, please try again later", HttpStatus.SERVICE_UNAVAILABLE);
+        }
+
+        if (!USER_ROLE.equalsIgnoreCase(user.getRole())) {
+            throw new BusinessException("Cannot create bank account: no USER with email " + email + " exists", HttpStatus.NOT_FOUND);
+        }
     }
 
     public BankAccountDto updateAccount(Long id, BankAccountDto dto) {

@@ -11,6 +11,12 @@ interface UserFormState {
   role: string;
 }
 
+interface AddAccountFormState {
+  email: string;
+  currency: string;
+  amount: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   imports: [CommonModule, FormsModule],
@@ -43,12 +49,18 @@ export class DashboardComponent implements OnInit {
   bankAccountsLoading = false;
   editingBankAccountId: number | null = null;
   editBankAccountAmount = 0;
+  showAddBankAccountForm = false;
+  newBankAccount: AddAccountFormState = { email: '', currency: '', amount: 0 };
+  bankAccountFormError = '';
 
   // Crypto wallets management (OWNER/ADMIN)
   cryptoWallets: CryptoWalletDto[] = [];
   cryptoWalletsLoading = false;
   editingCryptoWalletId: number | null = null;
   editCryptoWalletAmount = 0;
+  showAddCryptoWalletForm = false;
+  newCryptoWallet: AddAccountFormState = { email: '', currency: '', amount: 0 };
+  cryptoWalletFormError = '';
 
   // USER: own accounts
   myBankAccounts: BankAccountDto[] = [];
@@ -194,6 +206,32 @@ export class DashboardComponent implements OnInit {
 
   // --- Bank accounts management ---
 
+  toggleAddBankAccountForm(): void {
+    this.showAddBankAccountForm = !this.showAddBankAccountForm;
+    this.newBankAccount = { email: '', currency: '', amount: 0 };
+    this.bankAccountFormError = '';
+  }
+
+  cancelAddBankAccount(): void {
+    this.showAddBankAccountForm = false;
+  }
+
+  submitAddBankAccount(): void {
+    this.bankAccountFormError = '';
+
+    this.apiService
+      .addBankAccount(this.newBankAccount.email, this.newBankAccount.currency, this.newBankAccount.amount)
+      .subscribe({
+        next: () => {
+          this.showAddBankAccountForm = false;
+          this.loadBankAccounts();
+        },
+        error: (err) => {
+          this.bankAccountFormError = err?.error?.message ?? 'Failed to add bank account.';
+        },
+      });
+  }
+
   startEditBankAccount(account: BankAccountDto): void {
     this.editingBankAccountId = account.id;
     this.editBankAccountAmount = account.amount;
@@ -229,6 +267,32 @@ export class DashboardComponent implements OnInit {
   }
 
   // --- Crypto wallets management ---
+
+  toggleAddCryptoWalletForm(): void {
+    this.showAddCryptoWalletForm = !this.showAddCryptoWalletForm;
+    this.newCryptoWallet = { email: '', currency: '', amount: 0 };
+    this.cryptoWalletFormError = '';
+  }
+
+  cancelAddCryptoWallet(): void {
+    this.showAddCryptoWalletForm = false;
+  }
+
+  submitAddCryptoWallet(): void {
+    this.cryptoWalletFormError = '';
+
+    this.apiService
+      .addCryptoWallet(this.newCryptoWallet.email, this.newCryptoWallet.currency, this.newCryptoWallet.amount)
+      .subscribe({
+        next: () => {
+          this.showAddCryptoWalletForm = false;
+          this.loadCryptoWallets();
+        },
+        error: (err) => {
+          this.cryptoWalletFormError = err?.error?.message ?? 'Failed to add crypto wallet.';
+        },
+      });
+  }
 
   startEditCryptoWallet(wallet: CryptoWalletDto): void {
     this.editingCryptoWalletId = wallet.id;

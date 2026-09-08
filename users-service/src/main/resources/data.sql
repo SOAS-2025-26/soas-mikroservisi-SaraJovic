@@ -1,1 +1,3 @@
 INSERT INTO users(email, password, role) VALUES('owner@app.com', '$2a$10$bGUUIm5nrExQ/f/pqIu4K.8vC/smF9mvwzURnoe1Vp8l4mHl/reCi', 'OWNER');
+INSERT INTO users(email, password, role) VALUES('admin@app.com', '$2b$10$e3FOUMPCKWaoSf3aqpSxi.6gM1ik1ZiSTEj4CXqgsSURp3Xgp0Q7u', 'ADMIN');
+INSERT INTO users(email, password, role) VALUES('user@app.com', '$2b$10$HJtLKsiJg8mwSjvvCUNW2e3w/OfNjW3CB9F3DWBUcqFy42d0bWEuq', 'USER');

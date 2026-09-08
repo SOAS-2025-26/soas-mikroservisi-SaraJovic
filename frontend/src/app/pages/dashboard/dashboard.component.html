@@ -67,7 +67,21 @@
 
     @if (isAdmin) {
       <div class="card">
-        <h2>BANK ACCOUNTS</h2>
+        <div class="card-header-row">
+          <h2>BANK ACCOUNTS</h2>
+          <button class="btn-add" type="button" (click)="toggleAddBankAccountForm()">+ Add Bank Account</button>
+        </div>
+
+        <div class="inline-form" *ngIf="showAddBankAccountForm">
+          <input type="email" [(ngModel)]="newBankAccount.email" placeholder="Email" />
+          <input type="text" [(ngModel)]="newBankAccount.currency" placeholder="Currency (e.g. USD)" />
+          <input type="number" [(ngModel)]="newBankAccount.amount" placeholder="Amount" />
+          <button class="btn-success" type="button" (click)="submitAddBankAccount()">Save</button>
+          <button class="btn-cancel" type="button" (click)="cancelAddBankAccount()">Cancel</button>
+        </div>
+
+        <div class="error" *ngIf="bankAccountFormError">{{ bankAccountFormError }}</div>
+
         <table>
           <thead>
             <tr>
@@ -104,7 +118,21 @@
       </div>
 
       <div class="card">
-        <h2>CRYPTO WALLETS</h2>
+        <div class="card-header-row">
+          <h2>CRYPTO WALLETS</h2>
+          <button class="btn-add" type="button" (click)="toggleAddCryptoWalletForm()">+ Add Crypto Wallet</button>
+        </div>
+
+        <div class="inline-form" *ngIf="showAddCryptoWalletForm">
+          <input type="email" [(ngModel)]="newCryptoWallet.email" placeholder="Email" />
+          <input type="text" [(ngModel)]="newCryptoWallet.currency" placeholder="Currency (e.g. BTC)" />
+          <input type="number" [(ngModel)]="newCryptoWallet.amount" placeholder="Amount" />
+          <button class="btn-success" type="button" (click)="submitAddCryptoWallet()">Save</button>
+          <button class="btn-cancel" type="button" (click)="cancelAddCryptoWallet()">Cancel</button>
+        </div>
+
+        <div class="error" *ngIf="cryptoWalletFormError">{{ cryptoWalletFormError }}</div>
+
         <table>
           <thead>
             <tr>
