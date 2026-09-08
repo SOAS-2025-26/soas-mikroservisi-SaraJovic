@@ -1,5 +1,6 @@
 services:
   naming-server:
+    image: sjovic650/naming-server:latest
     build:
       context: .
       dockerfile: naming-server/Dockerfile
@@ -9,6 +10,7 @@ services:
       - app-network
 
   api-gateway:
+    image: sjovic650/api-gateway:latest
     build:
       context: .
       dockerfile: api-gateway/Dockerfile
@@ -22,6 +24,7 @@ services:
       - app-network
 
   users-service:
+    image: sjovic650/users-service:latest
     build:
       context: .
       dockerfile: users-service/Dockerfile
@@ -35,6 +38,7 @@ services:
       - app-network
 
   bank-account:
+    image: sjovic650/bank-account:latest
     build:
       context: .
       dockerfile: bank-account/Dockerfile
@@ -48,6 +52,7 @@ services:
       - app-network
 
   crypto-wallet:
+    image: sjovic650/crypto-wallet:latest
     build:
       context: .
       dockerfile: crypto-wallet/Dockerfile
@@ -61,6 +66,7 @@ services:
       - app-network
 
   currency-exchange:
+    image: sjovic650/currency-exchange:latest
     build:
       context: .
       dockerfile: currency-exchange/Dockerfile
@@ -74,6 +80,7 @@ services:
       - app-network
 
   crypto-exchange:
+    image: sjovic650/crypto-exchange:latest
     build:
       context: .
       dockerfile: crypto-exchange/Dockerfile
@@ -87,6 +94,7 @@ services:
       - app-network
 
   currency-conversion:
+    image: sjovic650/currency-conversion:latest
     build:
       context: .
       dockerfile: currency-conversion/Dockerfile
@@ -100,6 +108,7 @@ services:
       - app-network
 
   trade-service:
+    image: sjovic650/trade-service:latest
     build:
       context: .
       dockerfile: trade-service/Dockerfile
