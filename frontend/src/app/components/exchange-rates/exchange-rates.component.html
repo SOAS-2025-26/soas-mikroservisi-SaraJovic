@@ -6,7 +6,7 @@
 
   <div class="cards-row">
     <div class="card">
-      <h2>💵 Fiat Currency Rates</h2>
+      <h2>Fiat Currency Rates</h2>
       <div class="form-row">
         <div class="form-group">
           <label>From</label>
@@ -26,13 +26,13 @@
         {{ fiatLoading ? 'Loading...' : 'Get Rate' }}
       </button>
       <div class="result" *ngIf="fiatRate !== null">
-        1 {{fiatFrom}} = <strong>{{fiatRate}}</strong> {{fiatTo}}
+        1 {{fiatFrom}} = <strong>{{fiatRate | number:'1.2-6'}}</strong> {{fiatTo}}
       </div>
       <div class="error" *ngIf="fiatError">{{ fiatError }}</div>
     </div>
 
     <div class="card">
-      <h2>🪙 Crypto Rates</h2>
+      <h2>Crypto Rates</h2>
       <div class="form-row">
         <div class="form-group">
           <label>From</label>
@@ -52,7 +52,7 @@
         {{ cryptoLoading ? 'Loading...' : 'Get Rate' }}
       </button>
       <div class="result" *ngIf="cryptoRate !== null">
-        1 {{cryptoFrom}} = <strong>{{cryptoRate}}</strong> {{cryptoTo}}
+        1 {{cryptoFrom}} = <strong>{{cryptoRate | number:'1.2-6'}}</strong> {{cryptoTo}}
       </div>
       <div class="error" *ngIf="cryptoError">{{ cryptoError }}</div>
     </div>
@@ -74,7 +74,7 @@
             @if (conversion.loading) {
               Loading...
             } @else if (conversion.rate !== null) {
-              {{ conversion.rate }}
+              {{ conversion.rate | number:'1.2-6' }}
             } @else {
               <span [title]="conversion.errorMessage ?? ''">N/A</span>
             }

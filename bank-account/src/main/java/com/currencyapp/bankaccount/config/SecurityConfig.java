@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/bank-accounts/my").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/bank-accounts").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/bank-accounts/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/bank-accounts/*").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new HeaderRoleAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

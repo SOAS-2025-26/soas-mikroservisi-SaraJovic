@@ -98,6 +98,13 @@ public class CryptoWalletService {
         cryptoWalletRepository.deleteByEmail(email);
     }
 
+    public void deleteWallet(Long id) {
+        if (!cryptoWalletRepository.existsById(id)) {
+            throw new BusinessException("Crypto wallet not found with id " + id, HttpStatus.NOT_FOUND);
+        }
+        cryptoWalletRepository.deleteById(id);
+    }
+
     public CryptoWalletDto deductAmount(String email, String currencyCode, Double amount) {
         CryptoWallet wallet = cryptoWalletRepository.findByEmailAndCurrencyCode(email, currencyCode)
                 .orElseThrow(() -> new BusinessException("Crypto wallet not found for " + email + " in " + currencyCode, HttpStatus.NOT_FOUND));

@@ -98,6 +98,13 @@ public class BankAccountService {
         bankAccountRepository.deleteByEmail(email);
     }
 
+    public void deleteAccount(Long id) {
+        if (!bankAccountRepository.existsById(id)) {
+            throw new BusinessException("Bank account not found with id " + id, HttpStatus.NOT_FOUND);
+        }
+        bankAccountRepository.deleteById(id);
+    }
+
     public BankAccountDto deductAmount(String email, String currencyCode, Double amount) {
         BankAccount account = bankAccountRepository.findByEmailAndCurrencyCode(email, currencyCode)
                 .orElseThrow(() -> new BusinessException("Bank account not found for " + email + " in " + currencyCode, HttpStatus.NOT_FOUND));

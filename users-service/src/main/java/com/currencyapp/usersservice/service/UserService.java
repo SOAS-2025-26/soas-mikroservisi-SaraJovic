@@ -101,6 +101,11 @@ public class UserService {
             throw new BusinessException("ADMIN can only update users with role USER", HttpStatus.FORBIDDEN);
         }
 
+        if (OWNER_ROLE.equalsIgnoreCase(dto.getRole()) && !OWNER_ROLE.equalsIgnoreCase(user.getRole())
+                && userRepository.findAll().stream().anyMatch(u -> OWNER_ROLE.equalsIgnoreCase(u.getRole()))) {
+            throw new BusinessException("An OWNER already exists", HttpStatus.CONFLICT);
+        }
+
         user.setEmail(dto.getEmail());
         user.setRole(dto.getRole());
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {

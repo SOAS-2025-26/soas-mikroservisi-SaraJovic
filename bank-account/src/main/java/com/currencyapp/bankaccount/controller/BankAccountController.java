@@ -48,6 +48,11 @@ public class BankAccountController {
         return bankAccountService.updateAccount(id, dto);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteAccount(@PathVariable Long id) {
+        bankAccountService.deleteAccount(id);
+    }
+
     @GetMapping("/balance")
     public BankAccountDto getBalance(@RequestParam("email") String email,
                                       @RequestParam("currency") String currencyCode) {

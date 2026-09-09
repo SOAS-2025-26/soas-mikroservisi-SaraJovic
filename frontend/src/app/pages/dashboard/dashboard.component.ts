@@ -83,7 +83,7 @@ export class DashboardComponent implements OnInit {
   tradeError = '';
 
   get availableRoles(): string[] {
-    return this.role === 'OWNER' ? ['OWNER', 'ADMIN', 'USER'] : ['ADMIN', 'USER'];
+    return this.role === 'OWNER' ? ['ADMIN', 'USER'] : ['USER'];
   }
 
   get visibleUsers(): UserDto[] {
@@ -180,6 +180,14 @@ export class DashboardComponent implements OnInit {
   }
 
   removeUser(user: UserDto): void {
+    if (
+      !confirm(
+        `Da li ste sigurni da želite da obrišete korisnika ${user.email}? Ovo će takođe obrisati njegov bankovni nalog i crypto novčanik.`,
+      )
+    ) {
+      return;
+    }
+
     this.userFormError = '';
 
     this.apiService.deleteUser(user.id).subscribe({
@@ -252,6 +260,25 @@ export class DashboardComponent implements OnInit {
       });
   }
 
+  removeBankAccount(account: BankAccountDto): void {
+    if (
+      !confirm(
+        `Da li ste sigurni da želite da obrišete ${account.currencyCode} nalog korisnika ${account.email}?`,
+      )
+    ) {
+      return;
+    }
+
+    this.bankAccountFormError = '';
+
+    this.apiService.deleteBankAccount(account.id).subscribe({
+      next: () => this.loadBankAccounts(),
+      error: (err) => {
+        this.bankAccountFormError = err?.error?.message ?? 'Failed to delete bank account.';
+      },
+    });
+  }
+
   private loadBankAccounts(): void {
     this.bankAccountsLoading = true;
 
@@ -312,6 +339,25 @@ export class DashboardComponent implements OnInit {
           this.loadCryptoWallets();
         },
       });
+  }
+
+  removeCryptoWallet(wallet: CryptoWalletDto): void {
+    if (
+      !confirm(
+        `Da li ste sigurni da želite da obrišete ${wallet.currencyCode} novčanik korisnika ${wallet.email}?`,
+      )
+    ) {
+      return;
+    }
+
+    this.cryptoWalletFormError = '';
+
+    this.apiService.deleteCryptoWallet(wallet.id).subscribe({
+      next: () => this.loadCryptoWallets(),
+      error: (err) => {
+        this.cryptoWalletFormError = err?.error?.message ?? 'Failed to delete crypto wallet.';
+      },
+    });
   }
 
   private loadCryptoWallets(): void {

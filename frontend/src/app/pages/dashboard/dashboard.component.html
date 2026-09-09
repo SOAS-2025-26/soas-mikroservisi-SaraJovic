@@ -74,7 +74,10 @@
 
         <div class="inline-form" *ngIf="showAddBankAccountForm">
           <input type="email" [(ngModel)]="newBankAccount.email" placeholder="Email" />
-          <input type="text" [(ngModel)]="newBankAccount.currency" placeholder="Currency (e.g. USD)" />
+          <select [(ngModel)]="newBankAccount.currency">
+            <option value="" disabled>Select currency</option>
+            <option *ngFor="let c of fiatCurrencies" [value]="c">{{c}}</option>
+          </select>
           <input type="number" [(ngModel)]="newBankAccount.amount" placeholder="Amount" />
           <button class="btn-success" type="button" (click)="submitAddBankAccount()">Save</button>
           <button class="btn-cancel" type="button" (click)="cancelAddBankAccount()">Cancel</button>
@@ -107,9 +110,10 @@
               } @else {
                 <td>{{ account.email }}</td>
                 <td>{{ account.currencyCode }}</td>
-                <td>{{ account.amount }}</td>
+                <td>{{ account.amount | number:'1.2-2' }}</td>
                 <td>
                   <button class="btn-edit" type="button" (click)="startEditBankAccount(account)">Edit</button>
+                  <button class="btn-danger" type="button" (click)="removeBankAccount(account)">Delete</button>
                 </td>
               }
             </tr>
@@ -125,7 +129,10 @@
 
         <div class="inline-form" *ngIf="showAddCryptoWalletForm">
           <input type="email" [(ngModel)]="newCryptoWallet.email" placeholder="Email" />
-          <input type="text" [(ngModel)]="newCryptoWallet.currency" placeholder="Currency (e.g. BTC)" />
+          <select [(ngModel)]="newCryptoWallet.currency">
+            <option value="" disabled>Select currency</option>
+            <option *ngFor="let c of cryptoCurrencies" [value]="c">{{c}}</option>
+          </select>
           <input type="number" [(ngModel)]="newCryptoWallet.amount" placeholder="Amount" />
           <button class="btn-success" type="button" (click)="submitAddCryptoWallet()">Save</button>
           <button class="btn-cancel" type="button" (click)="cancelAddCryptoWallet()">Cancel</button>
@@ -158,9 +165,10 @@
               } @else {
                 <td>{{ wallet.email }}</td>
                 <td>{{ wallet.currencyCode }}</td>
-                <td>{{ wallet.amount }}</td>
+                <td>{{ wallet.amount | number:'1.2-6' }}</td>
                 <td>
                   <button class="btn-edit" type="button" (click)="startEditCryptoWallet(wallet)">Edit</button>
+                  <button class="btn-danger" type="button" (click)="removeCryptoWallet(wallet)">Delete</button>
                 </td>
               }
             </tr>
@@ -187,7 +195,7 @@
           <tbody>
             <tr *ngFor="let account of myBankAccounts">
               <td>{{ account.currencyCode }}</td>
-              <td>{{ account.amount }}</td>
+              <td>{{ account.amount | number:'1.2-2' }}</td>
             </tr>
           </tbody>
         </table>
@@ -205,7 +213,7 @@
           <tbody>
             <tr *ngFor="let wallet of myCryptoWallets">
               <td>{{ wallet.currencyCode }}</td>
-              <td>{{ wallet.amount }}</td>
+              <td>{{ wallet.amount | number:'1.2-6' }}</td>
             </tr>
           </tbody>
         </table>

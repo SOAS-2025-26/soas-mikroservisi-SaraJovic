@@ -48,6 +48,11 @@ public class CryptoWalletController {
         return cryptoWalletService.updateWallet(id, dto);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteWallet(@PathVariable Long id) {
+        cryptoWalletService.deleteWallet(id);
+    }
+
     @GetMapping("/balance")
     public CryptoWalletDto getBalance(@RequestParam("email") String email,
                                        @RequestParam("currency") String currencyCode) {

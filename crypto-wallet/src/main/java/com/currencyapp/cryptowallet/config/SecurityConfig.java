@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/crypto-wallets/my").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/crypto-wallets").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/crypto-wallets/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/crypto-wallets/*").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new HeaderRoleAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

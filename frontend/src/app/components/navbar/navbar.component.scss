@@ -1,6 +1,6 @@
 nav {
-  background: #111827;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   height: 64px;
   padding: 0 40px;
   display: flex;
@@ -11,7 +11,7 @@ nav {
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #38bdf8;
+  color: var(--color-accent);
   letter-spacing: 1px;
 }
 
@@ -21,17 +21,17 @@ nav {
   gap: 24px;
 
   a {
-    color: #94a3b8;
+    color: var(--color-text-secondary);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
 
     &:hover {
-      color: #38bdf8;
+      color: var(--color-accent);
     }
 
     &.active {
-      color: #38bdf8;
+      color: var(--color-accent);
     }
   }
 }
@@ -43,7 +43,7 @@ nav {
 }
 
 .user-email {
-  color: #94a3b8;
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
 }
 
@@ -60,19 +60,19 @@ nav {
   }
 
   &.admin {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
+    background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+    color: var(--color-accent);
   }
 
   &.user {
-    background: rgba(52, 211, 153, 0.15);
-    color: #34d399;
+    background: color-mix(in srgb, var(--color-success) 15%, transparent);
+    color: var(--color-success);
   }
 }
 
 .logout-btn {
-  border: 1px solid #38bdf8;
-  color: #38bdf8;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
   background: transparent;
   padding: 8px 16px;
   border-radius: 6px;
@@ -81,16 +81,20 @@ nav {
   transition: background 0.2s;
 
   &:hover {
-    background: rgba(56, 189, 248, 0.1);
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
   }
 }
 
 .login-btn {
-  background: #38bdf8;
-  color: #0a0e1a;
+  background: var(--color-accent);
+  color: var(--color-bg);
   border: none;
   padding: 8px 20px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 700;
+
+  &:hover {
+    background: var(--color-accent-hover);
+  }
 }

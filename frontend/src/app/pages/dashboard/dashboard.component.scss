@@ -13,7 +13,7 @@
   }
 
   p {
-    color: #94a3b8;
+    color: var(--color-text-secondary);
   }
 }
 
@@ -25,8 +25,8 @@
 }
 
 .card {
-  background: #111827;
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 32px;
   margin-bottom: 24px;
@@ -59,17 +59,17 @@ table {
 
   th {
     text-align: left;
-    color: #94a3b8;
+    color: var(--color-text-secondary);
     font-size: 0.8rem;
     letter-spacing: 0.5px;
     padding: 12px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    border-bottom: 1px solid var(--color-border);
   }
 
   td {
     padding: 12px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
-    color: #f1f5f9;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+    color: var(--color-text-primary);
   }
 }
 
@@ -83,15 +83,15 @@ table {
   input,
   select {
     padding: 10px 12px;
-    background: #0a0e1a;
-    border: 1px solid rgba(148, 163, 184, 0.15);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    color: #f1f5f9;
+    color: var(--color-text-primary);
     font-size: 0.9rem;
     outline: none;
 
     &:focus {
-      border-color: #38bdf8;
+      border-color: var(--color-accent);
     }
   }
 }
@@ -110,7 +110,7 @@ table {
 
   label {
     display: block;
-    color: #94a3b8;
+    color: var(--color-text-secondary);
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 0.85rem;
@@ -120,16 +120,16 @@ table {
   input {
     width: 100%;
     padding: 12px;
-    background: #0a0e1a;
-    border: 1px solid rgba(148, 163, 184, 0.15);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    color: #f1f5f9;
+    color: var(--color-text-primary);
     font-size: 1rem;
     outline: none;
     box-sizing: border-box;
 
     &:focus {
-      border-color: #38bdf8;
+      border-color: var(--color-accent);
     }
   }
 }
@@ -155,45 +155,50 @@ button {
 
 .btn-primary {
   width: 100%;
-  background: #38bdf8;
-  color: #0a0e1a;
+  background: var(--color-accent);
+  color: var(--color-bg);
   padding: 12px;
   font-size: 1rem;
+
+  &:hover {
+    background: var(--color-accent-hover);
+    opacity: 1;
+  }
 }
 
 .btn-success,
 .btn-add {
-  background: #34d399;
-  color: #0a0e1a;
+  background: var(--color-success);
+  color: var(--color-bg);
 }
 
 .btn-danger {
-  background: #f87171;
-  color: white;
+  background: var(--color-error);
+  color: var(--color-text-primary);
 }
 
 .btn-edit {
   background: transparent;
-  border: 1px solid #38bdf8;
-  color: #38bdf8;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
   margin-right: 8px;
 }
 
 .btn-cancel {
   background: transparent;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #94a3b8;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   margin-left: 8px;
 }
 
 .result {
   margin-top: 16px;
-  color: #38bdf8;
+  color: var(--color-accent);
   font-size: 1rem;
 }
 
 .error {
   margin-top: 16px;
-  color: #f87171;
+  color: var(--color-error);
   font-size: 0.9rem;
 }

@@ -100,6 +100,10 @@ export class ApiService {
     });
   }
 
+  deleteBankAccount(id: number): Observable<void> {
+    return this.http.delete<void>(`${BASE_URL}/bank-accounts/${id}`, { headers: this.getAuthHeaders() });
+  }
+
   getAllCryptoWallets(): Observable<CryptoWalletDto[]> {
     return this.http.get<CryptoWalletDto[]>(`${BASE_URL}/crypto-wallets`, { headers: this.getAuthHeaders() });
   }
@@ -117,6 +121,10 @@ export class ApiService {
       params: { email, currency, amount },
       headers: this.getAuthHeaders(),
     });
+  }
+
+  deleteCryptoWallet(id: number): Observable<void> {
+    return this.http.delete<void>(`${BASE_URL}/crypto-wallets/${id}`, { headers: this.getAuthHeaders() });
   }
 
   convertCurrency(from: string, to: string, quantity: number): Observable<ConversionResultDto> {

@@ -3,15 +3,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0a0e1a;
+  background: var(--color-bg);
 }
 
 .login-card {
-  background: #111827;
+  background: var(--color-surface);
   border-radius: 16px;
   padding: 48px;
   width: 420px;
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  border: 1px solid var(--color-border);
   box-sizing: border-box;
 }
 
@@ -19,19 +19,14 @@
   text-align: center;
   margin-bottom: 32px;
 
-  .logo-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-  }
-
   h1 {
     font-size: 1.6rem;
-    color: #f1f5f9;
+    color: var(--color-text-primary);
     margin: 0 0 8px;
   }
 
   p {
-    color: #94a3b8;
+    color: var(--color-text-secondary);
     margin: 0;
   }
 }
@@ -41,7 +36,7 @@
 
   label {
     display: block;
-    color: #94a3b8;
+    color: var(--color-text-secondary);
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 0.9rem;
@@ -50,20 +45,20 @@
   input {
     width: 100%;
     padding: 12px;
-    background: #0a0e1a;
-    border: 1px solid rgba(148, 163, 184, 0.15);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    color: #f1f5f9;
+    color: var(--color-text-primary);
     font-size: 1rem;
     outline: none;
     box-sizing: border-box;
 
     &:focus {
-      border-color: #38bdf8;
+      border-color: var(--color-accent);
     }
 
     &::placeholder {
-      color: #64748b;
+      color: var(--color-text-secondary);
     }
   }
 }
@@ -71,8 +66,8 @@
 .login-btn {
   width: 100%;
   padding: 14px;
-  background: #38bdf8;
-  color: #0a0e1a;
+  background: var(--color-accent);
+  color: var(--color-bg);
   border: none;
   border-radius: 8px;
   font-size: 1.05rem;
@@ -81,7 +76,7 @@
   transition: opacity 0.2s;
 
   &:hover {
-    opacity: 0.9;
+    background: var(--color-accent-hover);
   }
 
   &:disabled {
@@ -92,7 +87,7 @@
 
 .error {
   margin-top: 16px;
-  color: #f87171;
+  color: var(--color-error);
   text-align: center;
   font-size: 0.9rem;
 }
@@ -102,7 +97,7 @@
   text-align: center;
 
   a {
-    color: #38bdf8;
+    color: var(--color-accent);
     text-decoration: none;
     font-size: 0.9rem;
 
